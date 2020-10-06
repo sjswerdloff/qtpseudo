@@ -7,8 +7,11 @@ import sys
 
 from PyQt5 import QtWidgets
 
-# pylint: disable=relative-beyond-top-level
-import qtpseudonymise
+# pylint: disable = relative-beyond-top-level
+try:
+    from . import qtpseudonymise
+except:
+    import qtpseudonymise # type: ignore[no-redef]
 
 
 class PseudoMainWindow(qtpseudonymise.Ui_qtpseudo_main_window, QtWidgets.QMainWindow):
