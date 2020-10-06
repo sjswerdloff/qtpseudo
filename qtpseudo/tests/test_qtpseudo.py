@@ -6,6 +6,7 @@ try:
 except:
     from .qtpseudo import qtpseudo_controller  # type: ignore[no-redef]
 
+
 import pytest
 
 
