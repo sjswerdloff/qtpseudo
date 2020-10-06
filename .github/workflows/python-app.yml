@@ -33,7 +33,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
     - name: Test with pytest
       run: |
-        sudo apt-get install xvfb libxkbcommon-x11-0
+        sudo apt-get install xvfb libxkbcommon-x11-0 herbstluftwm
         sudo Xvfb :1 -screen 0 1024x768x24 </dev/null &
         export DISPLAY=":1"
+	herbstluftwm &
+	sleep 1
         pytest
