@@ -11,7 +11,7 @@ import pytest
 
 
 def test_qtpseudo_labels(qtbot):
-    # app = QtWidgets.QApplication([])
+    app = QtWidgets.QApplication([])
     qt_pseudo_main_window = QtWidgets.QMainWindow()
     # setting the application icon is an environment dependent thing
     # qt_pseudo_main_window.setWindowIcon()
@@ -28,3 +28,4 @@ def test_qtpseudo_labels(qtbot):
     assert ui.pseudonymise_button.text() == "Pseudonymise"
     assert not ui.rb_input_directory_only.isChecked()
     assert ui.check_box_disable_gender_keyword.isChecked()
+    app.closeAllWindows()
