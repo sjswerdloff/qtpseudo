@@ -11,7 +11,7 @@ from PyQt5 import QtWidgets
 try:
     from . import qtpseudonymise
 except:
-    import qtpseudonymise # type: ignore[no-redef]
+    import qtpseudonymise  # type: ignore[no-redef]
 
 
 class PseudoMainWindow(qtpseudonymise.Ui_qtpseudo_main_window, QtWidgets.QMainWindow):
@@ -39,7 +39,6 @@ class PseudoMainWindow(qtpseudonymise.Ui_qtpseudo_main_window, QtWidgets.QMainWi
 
     def _on_exit_select(self):
         quit()
-
 
     def _on_input_select_button_pressed(self):
 
