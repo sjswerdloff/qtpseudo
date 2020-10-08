@@ -7,10 +7,9 @@ Usage:
 
 from setuptools import setup
 
-PYMEDPHYS_DIR = '/Users/stuartswerdloff/PythonProjects/pymedphys'
+PYMEDPHYS_DIR = '/Users/stuartswerdloff/PythonProjects/pymedphys/'
 APP = ['qtpseudo/qtpseudo_main.py']
-DATA_FILES = ['/Users/stuartswerdloff/PythonProjects/pymedphys/pymedphys/_imports/imports.py',
-                 PYMEDPHYS_DIR + 'pymedphys/_imports/imports.py',
+DATA_FILES = [ PYMEDPHYS_DIR + 'pymedphys/_imports/imports.py',
                  PYMEDPHYS_DIR +'pymedphys/_experimental/pseudonymisation/identifying_uids.json', 
                  PYMEDPHYS_DIR +'pymedphys/_data/zenodo.json' ,
                  PYMEDPHYS_DIR +'pymedphys/_data/urls.json' ,
