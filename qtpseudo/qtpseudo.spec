@@ -3,7 +3,7 @@
 block_cipher = None
 
 PYMEDPHYS_DIR = "/home/osboxes/PythonProjects/pymedphys4/pymedphys/"
-a = Analysis(['qtpseudo.py'],
+a = Analysis(['qtpseudo_main.py'],
              pathex=['/home/osboxes/PythonProjects/qtpseudo1/qtpseudo/qtpseudo'],
              binaries=[],
              datas=[

@@ -7,11 +7,13 @@ import sys
 
 from PyQt5 import QtWidgets
 
-# pylint: disable = relative-beyond-top-level
-try:
-    from . import qtpseudo_controller
-except:
-    import qtpseudo_controller  # type: ignore[no-redef]
+from qtpseudo import qtpseudo_controller
+
+# # pylint: disable = relative-beyond-top-level
+# try:
+#     from . import qtpseudo_controller
+# except:
+#     import qtpseudo_controller  # type: ignore[no-redef]
 
 
 if __name__ == "__main__":

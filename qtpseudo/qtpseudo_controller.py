@@ -1,6 +1,5 @@
 """Slots for qtpseudonymise UI created using QtDesigner
 """
-
 import logging
 import os
 import subprocess
@@ -15,12 +14,13 @@ from pymedphys.dicom import anonymise as pmp_anonymise
 
 from PyQt5 import QtWidgets
 
+from qtpseudo import qtpseudonymise
 
-# pylint: disable = relative-beyond-top-level
-try:
-    from . import qtpseudonymise
-except:
-    import qtpseudonymise  # type: ignore[no-redef]
+# # pylint: disable = relative-beyond-top-level
+# try:
+#     from . import qtpseudonymise
+# except:
+#     import qtpseudonymise  # type: ignore[no-redef]
 
 
 class PseudoMainWindow(qtpseudonymise.Ui_qtpseudo_main_window, QtWidgets.QMainWindow):
