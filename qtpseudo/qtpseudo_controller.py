@@ -1,11 +1,20 @@
 """Slots for qtpseudonymise UI created using QtDesigner
 """
+
 import logging
 import os
 import subprocess
 import sys
 
+from glob import glob
+
+import pydicom
+import pymedphys.experimental.pseudonymisation as pseudonymise
+from pymedphys._dicom.anonymise import create_filename_from_dataset
+from pymedphys.dicom import anonymise as pmp_anonymise
+
 from PyQt5 import QtWidgets
+
 
 # pylint: disable = relative-beyond-top-level
 try:
@@ -36,6 +45,75 @@ class PseudoMainWindow(qtpseudonymise.Ui_qtpseudo_main_window, QtWidgets.QMainWi
         self.select_input_button.clicked.connect(self._on_input_select_button_pressed)
         self.select_output_button.clicked.connect(self._on_output_select_button_pressed)
         self.exit_select.triggered.connect(self._on_exit_select)
+
+    def _pseudonymise_input_files_by_dataset(self, input_files, output_directory):
+        successful_files = list()
+        failed_files = list()
+        error_messages = list()
+        for input_file in input_files:
+            if os.path.isdir(input_file):
+                dicom_filepaths = glob(input_file + "/**/*.dcm", recursive=True)
+            else:
+                dicom_filepaths = input_file
+
+        os.makedirs(output_directory, exist_ok=True)
+
+        keywords_to_leave_unchanged = list()
+
+        if self.check_box_disable_gender_keyword:
+            keywords_to_leave_unchanged.append("PatientSex")
+
+        for dicom_input in dicom_filepaths:
+            try:
+                print(f"reading {dicom_input}")
+                ds_input = pydicom.read_file(dicom_input, force=True)
+                ds_pseudo = pmp_anonymise(
+                    ds_input,
+                    keywords_to_leave_unchanged=keywords_to_leave_unchanged,
+                    replacement_strategy=pseudonymise.pseudonymisation_dispatch,
+                    identifying_keywords=pseudonymise.get_default_pseudonymisation_keywords(),
+                )
+                ds_pseudo_full_path = create_filename_from_dataset(
+                    ds_pseudo, output_directory
+                )
+                ds_pseudo.save_as(ds_pseudo_full_path)
+                print(f"pseudonymised to {ds_pseudo_full_path}")
+                successful_files.append(dicom_input)
+            except (FileNotFoundError, IOError) as e_info:
+                logging.error("Problem with %s", dicom_input)
+                logging.error(str(e_info))
+                failed_files.append(dicom_input)
+                error_messages.append(e_info)
+        if len(input_files) == 1 and len(successful_files) > 1:
+            successful_files = (
+                input_files  # a directory was provided, so don't list the world
+            )
+        return successful_files, failed_files, error_messages
+
+    def _pseudonymise_input_files_via_cli(self, input_files, output_directory):
+        successful_files = list()
+        failed_files = list()
+        error_messages = list()
+        for input_path in input_files:
+            anon_file_command = (
+                "pymedphys --verbose experimental dicom anonymise --pseudo".split()
+                + [input_path]
+                + f"-o {output_directory}".split()
+            )
+            if self.check_box_disable_gender_keyword:
+                anon_file_command.append("-k")
+                anon_file_command.append("PatientSex")
+
+            print(anon_file_command)
+
+            try:
+                subprocess.check_output(anon_file_command)
+                successful_files.append(input_path)
+            except subprocess.CalledProcessError as e_called_process:
+                print(e_called_process)
+                failed_files.append(input_path)
+                error_messages.append(e_called_process)
+        return successful_files, failed_files, error_messages
 
     def _on_exit_select(self):
         quit()
@@ -89,30 +167,23 @@ class PseudoMainWindow(qtpseudonymise.Ui_qtpseudo_main_window, QtWidgets.QMainWi
                 logging.debug("or a single file was selected")
 
         output_directory = self.text_edit_output_directory.toPlainText()
-        successful_files = list()
-        failed_files = list()
-        error_messages = list()
+
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle("Pseudonymisation Outcome")
-        for input_path in input_files:
-            anon_file_command = (
-                "pymedphys --verbose experimental dicom anonymise --pseudo".split()
-                + [input_path]
-                + f"-o {output_directory}".split()
-            )
-            if self.check_box_disable_gender_keyword:
-                anon_file_command.append("-k")
-                anon_file_command.append("PatientSex")
+        use_cli = False
+        if use_cli:
+            (
+                successful_files,
+                failed_files,
+                error_messages,
+            ) = self._pseudonymise_input_files_via_cli(input_files, output_directory)
+        else:
+            (
+                successful_files,
+                failed_files,
+                error_messages,
+            ) = self._pseudonymise_input_files_by_dataset(input_files, output_directory)
 
-            print(anon_file_command)
-
-            try:
-                subprocess.check_output(anon_file_command)
-                successful_files.append(input_path)
-            except subprocess.CalledProcessError as e_called_process:
-                print(e_called_process)
-                failed_files.append(input_path)
-                error_messages.append(e_called_process)
         failure_message = ""
         message_text = ""
         if len(failed_files) > 0:

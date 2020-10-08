@@ -1,1 +1,1 @@
-from . import qtpseudo_controller
+from . import qtpseudo_controller, qtpseudonymise
