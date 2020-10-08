@@ -14,7 +14,10 @@ from pymedphys.dicom import anonymise as pmp_anonymise
 
 from PyQt5 import QtWidgets
 
-from qtpseudo import qtpseudonymise
+try:
+    from qtpseudo import qtpseudonymise
+except:
+    import qtpseudonymise  # type: ignore[no-redef]
 
 # # pylint: disable = relative-beyond-top-level
 # try:
